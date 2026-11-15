@@ -1,0 +1,209 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Player profile, avatar configuration, XP progression, stats, unlocked sticker packs, and achievements.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner." },
+        "username": { "type": "string", "description": "Unique 3-16 character handle." },
+        "displayName": { "type": "string", "description": "Friendly display name." },
+        "avatarJson": { "type": "string", "description": "Compact JSON config (<300B) for layered vector avatar." },
+        "bio": { "type": "string", "description": "Short biography up to 120 characters." },
+        "countryFlag": { "type": "string", "description": "Optional country emoji flag." },
+        "themeColor": { "type": "string", "description": "Hex color for profile banner." },
+        "xp": { "type": "integer", "description": "Total experience points earned." },
+        "level": { "type": "integer", "description": "Current player level." },
+        "equippedTitle": { "type": "string", "description": "Equipped player title." },
+        "equippedBadge": { "type": "string", "description": "Equipped achievement badge ID." },
+        "gamesPlayed": { "type": "integer", "description": "Total games completed." },
+        "wins": { "type": "integer", "description": "Total 1st-place finishes." },
+        "totalPoints": { "type": "integer", "description": "Cumulative score across matches." },
+        "correctGuesses": { "type": "integer", "description": "Total words guessed." },
+        "bestGuessMs": { "type": "integer", "description": "Fastest correct guess in milliseconds." },
+        "bestStreak": { "type": "integer", "description": "Longest consecutive guess streak." },
+        "unlockedPacksJson": { "type": "string", "description": "Comma-separated or JSON list of unlocked sticker pack IDs." },
+        "achievementsJson": { "type": "string", "description": "JSON list of unlocked achievement IDs." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of last update." }
+      },
+      "required": [
+        "userId", "username", "displayName", "avatarJson", "bio", "countryFlag", "themeColor",
+        "xp", "level", "equippedTitle", "equippedBadge", "gamesPlayed", "wins", "totalPoints",
+        "correctGuesses", "bestGuessMs", "bestStreak", "unlockedPacksJson", "achievementsJson",
+        "createdAt", "updatedAt"
+      ]
+    },
+    "Friendship": {
+      "title": "Friendship",
+      "description": "Friend entry scoped under a user profile.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user UID." },
+        "friendCode": { "type": "string", "description": "Friend invite code or UID." },
+        "friendUsername": { "type": "string", "description": "Friend username." },
+        "friendDisplayName": { "type": "string", "description": "Friend display name." },
+        "friendAvatarJson": { "type": "string", "description": "Friend layered avatar JSON." },
+        "status": { "type": "string", "enum": ["PENDING", "ACCEPTED", "BLOCKED"], "description": "Friendship status." },
+        "roomCode": { "type": "string", "description": "Active room code if friend is in a room." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "userId", "friendCode", "friendUsername", "friendDisplayName", "friendAvatarJson",
+        "status", "roomCode", "createdAt", "updatedAt"
+      ]
+    },
+    "CustomWordPack": {
+      "title": "CustomWordPack",
+      "description": "User-authored custom word list for Doodle Dash rooms.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user UID." },
+        "name": { "type": "string", "description": "Word pack title." },
+        "language": { "type": "string", "description": "Language code (e.g., EN)." },
+        "difficulty": { "type": "string", "enum": ["EASY", "MEDIUM", "HARD", "MIXED"], "description": "Difficulty tag." },
+        "isFamilyFriendly": { "type": "boolean", "description": "Whether filtered for family-friendly play." },
+        "wordsCsv": { "type": "string", "description": "Comma-separated custom words." },
+        "wordCount": { "type": "integer", "description": "Number of words in the pack." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "userId", "name", "language", "difficulty", "isFamilyFriendly", "wordsCsv",
+        "wordCount", "createdAt", "updatedAt"
+      ]
+    },
+    "GameRoom": {
+      "title": "GameRoom",
+      "description": "Real-time multiplayer Doodle Dash room state machine.",
+      "type": "object",
+      "properties": {
+        "roomCode": { "type": "string", "description": "6-character alphanumeric room code." },
+        "hostId": { "type": "string", "description": "Host player UID." },
+        "hostName": { "type": "string", "description": "Host display name." },
+        "isPublic": { "type": "boolean", "description": "Whether listed in Quick Play." },
+        "phase": { "type": "string", "enum": ["LOBBY", "WORD_CHOICE", "DRAWING", "TURN_END", "GAME_END"], "description": "Current game phase." },
+        "round": { "type": "integer", "description": "Current round number." },
+        "maxRounds": { "type": "integer", "description": "Total rounds (2-10)." },
+        "drawTimeSec": { "type": "integer", "description": "Draw time in seconds (30-180)." },
+        "wordChoicesCount": { "type": "integer", "description": "Candidate words per turn (1-5)." },
+        "hintsCount": { "type": "integer", "description": "Letter hints per turn (0-3)." },
+        "gameMode": { "type": "string", "enum": ["CLASSIC", "SPEED_30S", "BLIND_DRAWER", "TEAM_BATTLE", "PASS_THE_DOODLE", "DAILY_CHALLENGE"], "description": "Selected game mode." },
+        "difficulty": { "type": "string", "enum": ["EASY", "MEDIUM", "HARD", "MIXED"], "description": "Word difficulty." },
+        "wordPackCategory": { "type": "string", "description": "Selected word category." },
+        "customWordsCsv": { "type": "string", "description": "Custom words for the room." },
+        "currentDrawerId": { "type": "string", "description": "Active drawer UID or bot ID." },
+        "currentDrawerName": { "type": "string", "description": "Active drawer name." },
+        "wordMask": { "type": "string", "description": "Public masked word shown to guessers." },
+        "secretWord": { "type": "string", "description": "Current turn target word." },
+        "phaseEndsAtMs": { "type": "integer", "description": "Epoch ms when current phase expires." },
+        "memberUids": { "type": "array", "description": "Bounded list (<=12) of authenticated member UIDs." },
+        "playersJson": { "type": "string", "description": "Serialized scoreboard and seat state." },
+        "reactionCountsJson": { "type": "string", "description": "Aggregated live reaction burst counts." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "roomCode", "hostId", "hostName", "isPublic", "phase", "round", "maxRounds",
+        "drawTimeSec", "wordChoicesCount", "hintsCount", "gameMode", "difficulty",
+        "wordPackCategory", "customWordsCsv", "currentDrawerId", "currentDrawerName",
+        "wordMask", "secretWord", "phaseEndsAtMs", "memberUids", "playersJson",
+        "reactionCountsJson", "createdAt", "updatedAt"
+      ]
+    },
+    "CanvasOp": {
+      "title": "CanvasOp",
+      "description": "Append-only deterministic vector operation on the 1600x1000 canvas.",
+      "type": "object",
+      "properties": {
+        "roomId": { "type": "string", "description": "Parent room ID." },
+        "authorId": { "type": "string", "description": "Drawer UID." },
+        "seq": { "type": "integer", "description": "Monotonic sequence number." },
+        "opType": { "type": "string", "enum": ["STROKE", "SHAPE", "FILL", "UNDO", "REDO", "CLEAR"], "description": "Vector operation type." },
+        "tool": { "type": "string", "description": "Brush or shape tool name." },
+        "colorHex": { "type": "string", "description": "Hex color string." },
+        "sizePx": { "type": "integer", "description": "Brush size (1-80 px)." },
+        "opacity": { "type": "integer", "description": "Opacity percentage (1-100)." },
+        "symmetryMode": { "type": "string", "description": "Symmetry mode (NONE, MIRROR_V, MIRROR_H, RADIAL_4, RADIAL_6, RADIAL_8)." },
+        "seed": { "type": "integer", "description": "Deterministic mulberry32 seed." },
+        "encodedData": { "type": "string", "description": "Quantized delta-encoded points or scanline RLE spans." },
+        "memberUids": { "type": "array", "description": "Denormalized member UIDs for zero-get query isolation." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "roomId", "authorId", "seq", "opType", "tool", "colorHex", "sizePx",
+        "opacity", "symmetryMode", "seed", "encodedData", "memberUids", "createdAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Room chat message, sticker, emoji, or guess result notification.",
+      "type": "object",
+      "properties": {
+        "roomId": { "type": "string", "description": "Parent room ID." },
+        "senderId": { "type": "string", "description": "Sender UID." },
+        "senderName": { "type": "string", "description": "Sender display name." },
+        "channel": { "type": "string", "enum": ["EVERYONE", "GUESSED"], "description": "Visibility channel." },
+        "messageType": { "type": "string", "enum": ["TEXT", "EMOJI", "STICKER", "SYSTEM", "GUESS_RESULT"], "description": "Message classification." },
+        "content": { "type": "string", "description": "Filtered text content (<=140 chars)." },
+        "stickerId": { "type": "string", "description": "Optional sticker ID from bundled packs." },
+        "memberUids": { "type": "array", "description": "Denormalized member UIDs for zero-get query isolation." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "roomId", "senderId", "senderName", "channel", "messageType",
+        "content", "stickerId", "memberUids", "createdAt"
+      ]
+    },
+    "ModerationReport": {
+      "title": "ModerationReport",
+      "description": "Insert-only player safety report with chat snapshot.",
+      "type": "object",
+      "properties": {
+        "reporterId": { "type": "string", "description": "Reporter UID." },
+        "targetUserId": { "type": "string", "description": "Reported player ID." },
+        "targetUsername": { "type": "string", "description": "Reported player username." },
+        "roomCode": { "type": "string", "description": "6-character room code." },
+        "reason": { "type": "string", "description": "Moderation report reason." },
+        "chatSnapshotJson": { "type": "string", "description": "Last 20 chat lines serialized." },
+        "status": { "type": "string", "enum": ["OPEN", "CLOSED"], "description": "Report status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp." }
+      },
+      "required": [
+        "reporterId", "targetUserId", "targetUsername", "roomCode",
+        "reason", "chatSnapshotJson", "status", "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Owner-isolated player profile, avatar, stats, and progression."
+    },
+    "/users/{userId}/friends/{friendId}": {
+      "schema": { "$ref": "#/entities/Friendship" },
+      "description": "Owner-isolated friend list entries."
+    },
+    "/users/{userId}/word_packs/{packId}": {
+      "schema": { "$ref": "#/entities/CustomWordPack" },
+      "description": "Owner-isolated custom word packs."
+    },
+    "/rooms/{roomId}": {
+      "schema": { "$ref": "#/entities/GameRoom" },
+      "description": "Multiplayer game rooms."
+    },
+    "/rooms/{roomId}/ops/{opId}": {
+      "schema": { "$ref": "#/entities/CanvasOp" },
+      "description": "Append-only vector canvas op-log."
+    },
+    "/rooms/{roomId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Room chat messages and sticker events."
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/ModerationReport" },
+      "description": "Insert-only safety reports."
+    }
+  }
+}
